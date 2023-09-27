@@ -166,16 +166,15 @@ void Game::sCollision()
 
 void Game::sEnemySpawner()
 {
-    //TODO: code which implements enemy spawning
-    // use m_currentFrame - m_lastEnemySpawnTime to determine how long it has been since the last enemy spawned
-
-    // spawnEnemy();
+    // Spawn an enemy by subtracting the last time an enemy was spawned and the current frame to equal 3 seconds
+    if (m_currentFrame - m_lastEnemySpawnTime == 180) spawnEnemy();
 }
 
 
 // Renders the game
 void Game::sRender()
 {
+    // Clear the window every frame so that the same entity doesn't get drawn over and over
     m_window.clear();
 
     for (auto e : m_entities.getEntities())
