@@ -128,6 +128,21 @@ void Game::sMovement()
         m_player->cTransform->velocity.y = -5;
     }
 
+    if (m_player->cInput->down)
+    {
+        m_player->cTransform->velocity.y = 5;
+    }
+
+    if (m_player->cInput->right)
+    {
+        m_player->cTransform->velocity.x = 5;
+    }
+
+    if (m_player->cInput->left)
+    {
+        m_player->cTransform->velocity.x = -5;
+    }
+
     m_player->cTransform->pos.x += m_player->cTransform->velocity.x;
     m_player->cTransform->pos.y += m_player->cTransform->velocity.y;
 
@@ -195,7 +210,8 @@ void Game::sUserInput()
             m_running = false;
         }
 
-        // this event is triggered when a key is pressed
+        // Movement Inputs
+        // this event is triggered when the W key is pressed
         if (event.type == sf::Event::KeyPressed)
         {
             switch (event.key.code)
@@ -207,13 +223,85 @@ void Game::sUserInput()
             }
         }
 
-        // this event is triggered when a key is released
-        if (event.type == sf::Event::KeyPressed)
+        // this event is triggered when the W key is released
+        if (event.type == sf::Event::KeyReleased)
         {
             switch (event.key.code)
             {
             case sf::Keyboard::W:
                 m_player->cInput->up = false;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the S key is pressed
+        if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::S:
+                m_player->cInput->down = true;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the S key is released
+        if (event.type == sf::Event::KeyReleased)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::S:
+                m_player->cInput->down = false;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the D key is pressed
+        if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::D:
+                m_player->cInput->right = true;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the D key is released
+        if (event.type == sf::Event::KeyReleased)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::D:
+                m_player->cInput->right = false;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the A key is pressed
+        if (event.type == sf::Event::KeyPressed)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::A:
+                m_player->cInput->left = true;
+                break;
+            default:break;
+            }
+        }
+
+        // this event is triggered when the A key is released
+        if (event.type == sf::Event::KeyReleased)
+        {
+            switch (event.key.code)
+            {
+            case sf::Keyboard::A:
+                m_player->cInput->left = false;
                 break;
             default:break;
             }
