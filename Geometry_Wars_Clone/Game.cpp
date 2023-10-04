@@ -9,13 +9,36 @@ Game::Game(const std::string& config)
 
 void Game::init(const std::string& path)
 {
-    // TODO: read in config file here
-    // use the premade PlayerConfig, EnemyConfig and BulletConfig variables
     std::ifstream fin(path);
-    // fin >> m_playerConfig.SR >>
+    std::string temp;
+    while (fin >> temp)
+    {
+        if (temp == "Window")
+        {
+            fin >> m_windowConfig.W >> m_windowConfig.H >> m_windowConfig.FR >> m_windowConfig.FS;
+        }
+        
+        if (temp == "Player")
+        {
+            fin >> m_playerConfig.SR >> m_playerConfig.CR >> m_playerConfig.S >> m_playerConfig.FR >> m_playerConfig.FG >> m_playerConfig.FB >> m_playerConfig.OR >> m_playerConfig.OG >> m_playerConfig.OB >> m_playerConfig.OT >> m_playerConfig.V;
+        }
+            
+    }
+
+    std::cout <<  m_playerConfig.V ;
+
+    if (m_windowConfig.FS == 1)
+    {
+        m_windowConfig.FS = sf::Style::Fullscreen;
+    }
+    else
+    {
+        m_windowConfig.FS = sf::Style::Default;
+    }
+    
     // set up default window parameters
-    m_window.create(sf::VideoMode(1280, 720), "Geometry Wars Clone");
-    m_window.setFramerateLimit(60);
+    m_window.create(sf::VideoMode(m_windowConfig.W, m_windowConfig.H), "Geometry Wars Clone", m_windowConfig.FS);
+    m_window.setFramerateLimit(m_windowConfig.FR);
 
     spawnPlayer();
 }
@@ -65,12 +88,12 @@ void Game::spawnPlayer()
     entity->cTransform = std::make_shared<CTransform>(Vec2(mx, my), Vec2(1.0f, 1.0f), 0.0f);
 
     //The entity's shape will have radius 32, 8 sides, dark grey fill, and red outline of thickenss 4
-    entity->cShape = std::make_shared<CShape>(32.0f, 8, sf::Color(10, 10, 10), sf::Color(255, 0, 0), 4.0f);
+    entity->cShape = std::make_shared<CShape>(m_playerConfig.SR, m_playerConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_playerConfig.OT);
 
     // input component to control player
     entity->cInput = std::make_shared<CInput>();
 
-    entity->cCollision = std::make_shared<CCollision>(32);
+    entity->cCollision = std::make_shared<CCollision>(m_playerConfig.CR);
 
     //make this entity the player
     m_player = entity;
@@ -138,22 +161,22 @@ void Game::sMovement()
 
     if (m_player->cInput->up)
     {
-        m_player->cTransform->velocity.y = -5;
+        m_player->cTransform->velocity.y = -m_playerConfig.S;
     }
 
     if (m_player->cInput->down)
     {
-        m_player->cTransform->velocity.y = 5;
+        m_player->cTransform->velocity.y = m_playerConfig.S;
     }
 
     if (m_player->cInput->right)
     {
-        m_player->cTransform->velocity.x = 5;
+        m_player->cTransform->velocity.x = m_playerConfig.S;
     }
 
     if (m_player->cInput->left)
     {
-        m_player->cTransform->velocity.x = -5;
+        m_player->cTransform->velocity.x = -m_playerConfig.S;
     }
     
     // move all entities in m_entities vector
