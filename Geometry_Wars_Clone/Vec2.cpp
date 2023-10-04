@@ -69,5 +69,25 @@ void Vec2::operator /= (const float val)
 float Vec2::dist(const Vec2& rhs) const
 {
     //TODO
-    return 0;
+    float diffY = y - rhs.y;
+    float diffX = x - rhs.x;
+    return sqrt((diffY * diffY) + (diffX * diffX));
+}
+
+float Vec2::angle(const Vec2& rhs) const
+{
+    //TODO
+    float diffY = y - rhs.y;
+    float diffX = x - rhs.x;
+    return atan2f(diffY, diffX);
+}
+
+Vec2 Vec2::normalize(const Vec2& rhs) const
+{
+    //TODO
+    float diffY = y - rhs.y;
+    float diffX = x - rhs.x;
+    float length = sqrt((diffY * diffY) + (diffX * diffX));
+
+    return Vec2(diffX / length, diffY / length);
 }

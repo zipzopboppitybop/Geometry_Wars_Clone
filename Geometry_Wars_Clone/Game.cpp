@@ -109,6 +109,15 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
     // TODO: implement the spawning of a bullet which travels toward target
     // -bullet speed is given as a scalar speed
     // - you must set the velocity using formula in notes
+
+    auto bullet = m_entities.addEntity("bullet");
+    auto entity_stuff = Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y);
+    float distance = target.dist(entity_stuff);
+    float angle = target.angle(entity_stuff);
+    auto normalize = target.normalize(entity_stuff);
+    std::cout << distance << "\n";
+    bullet->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(8 * normalize.x, 8 * normalize.y), angle);
+    bullet->cShape = std::make_shared<CShape>(10, 8, sf::Color(255, 255, 255), sf::Color(255, 0, 0), 2);
 }
 
 void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
@@ -121,6 +130,7 @@ void Game::sMovement()
     //TODO: implement all entity movement in this function
     // you should read the m_player->cInput movement component to determine if the player is moving
 
+    // player movement
     m_player->cTransform->velocity = { 0,0 };
 
     if (m_player->cInput->up)
@@ -142,10 +152,20 @@ void Game::sMovement()
     {
         m_player->cTransform->velocity.x = -5;
     }
+    
+    // move all entities in m_entities vector
+    for (auto e : m_entities.getEntities())
+    {
+        e->cTransform->pos.x += e->cTransform->velocity.x;
+        e->cTransform->pos.y += e->cTransform->velocity.y;
+    }
 
-    m_player->cTransform->pos.x += m_player->cTransform->velocity.x;
-    m_player->cTransform->pos.y += m_player->cTransform->velocity.y;
+    //m_player->cTransform->pos.x += m_player->cTransform->velocity.x;
+    //m_player->cTransform->pos.y += m_player->cTransform->velocity.y;
 
+    // bullet movement
+
+    
 }
 
 void Game::sLifeSpan()
@@ -306,17 +326,15 @@ void Game::sUserInput()
             }
         }
 
-        // // this event is triggered when a key is released
-        // if (event.type == sf::Event::KeyPressed)
-        // {
-        //     switch (event.key.code)
-        //     {
-        //         case sf::Keyboard::W:
-        //         m_player->cInput->up = false;
-        //         break;
-        //     default:break;
-        //     }
-        // }
+        // Attack Input
+        // this event is triggered when left mouse button is pressed
+        if (event.type == sf::Event::MouseButtonPressed)
+        {
+            if (event.mouseButton.button == sf::Mouse::Left)
+            {
+                spawnBullet(m_player, Vec2(event.mouseButton.x, event.mouseButton.y));
+            }
+        }
 
 
     }
