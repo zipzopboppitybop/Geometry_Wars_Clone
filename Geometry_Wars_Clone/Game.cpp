@@ -35,6 +35,12 @@ void Game::run()
         //increment the current frame;
         // may need to be moved when pause implemented
         m_currentFrame++;
+
+        // respawn player if they die
+        if (!m_player->isActive())
+        {
+            spawnPlayer();
+        }
     }
 }
 
@@ -187,6 +193,18 @@ void Game::sCollision()
                e->destroy();
            }
         }
+    }
+
+    for (auto e : m_entities.getEntities("enemy"))
+    {
+       auto enemy_stuff = Vec2(e->cTransform->pos.x, e->cTransform->pos.y);
+       auto player_stuff = Vec2(m_player->cTransform->pos.x, m_player->cTransform->pos.y);
+       float dist = player_stuff.dist(enemy_stuff);
+       if (dist < e->cCollision->radius + m_player->cCollision->radius)
+       {
+          e->destroy();
+          m_player->destroy();
+       }
     }
 }
 
