@@ -29,7 +29,7 @@ class Game
 
     // Main Game Systems
     void init(const std::string& config); // initialize game with config file path
-    void setPaused(bool paused);           // pause the game
+    void setPaused();           // pause the game
 
     // Player and Enemy Systems
     void sMovement();       // System: Entity position / movement update

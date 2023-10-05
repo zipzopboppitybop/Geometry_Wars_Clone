@@ -35,8 +35,6 @@ void Game::init(const std::string& path)
             
     }
 
-    std::cout << m_bulletConfig.SR << m_bulletConfig.CR << m_bulletConfig.S << m_bulletConfig.FR << m_bulletConfig.FG << m_bulletConfig.FB << m_bulletConfig.OR << m_bulletConfig.OG << m_bulletConfig.OB << m_bulletConfig.OT << m_bulletConfig.V << m_bulletConfig.L;
-
     if (m_windowConfig.FS == 1)
     {
         m_windowConfig.FS = sf::Style::Fullscreen;
@@ -59,15 +57,16 @@ void Game::run()
     {
         m_entities.update();
 
-        sEnemySpawner();
-        sMovement();
-        sCollision();
-        sUserInput();
-        sRender();
+        if (!m_paused)
+        {
+            sEnemySpawner();
+            sMovement();
+            sCollision();
+            m_currentFrame++;
+        }
 
-        //increment the current frame;
-        // may need to be moved when pause implemented
-        m_currentFrame++;
+        sRender();
+        sUserInput();
 
         // respawn player if they die
         if (!m_player->isActive())
@@ -77,9 +76,10 @@ void Game::run()
     }
 }
 
-void Game::setPaused(bool paused)
+void Game::setPaused()
 {
     //TODO
+    m_paused = !m_paused;
 }
 
 // respawn the player in the middle of the screen
@@ -335,111 +335,73 @@ void Game::sUserInput()
             m_running = false;
         }
 
-        // Movement Inputs
-        // this event is triggered when the W key is pressed
+        // Pause Input
         if (event.type == sf::Event::KeyPressed)
         {
-            switch (event.key.code)
+            if (event.key.code == sf::Keyboard::Space)
             {
-            case sf::Keyboard::W:
-                m_player->cInput->up = true;
-                break;
-            default:break;
+                setPaused();
             }
+        }
+         
+        // Movement Inputs Pressed
+        if (!m_paused)
+        {
+            if (event.type == sf::Event::KeyPressed)
+            {
+                switch (event.key.code)
+                {
+                case sf::Keyboard::W:
+                    m_player->cInput->up = true;
+                    break;
+                case sf::Keyboard::S:
+                    m_player->cInput->down = true;
+                    break;
+                case sf::Keyboard::D:
+                    m_player->cInput->right = true;
+                    break;
+                case sf::Keyboard::A:
+                    m_player->cInput->left = true;
+                    break;
+                default:break;
+                }
+            }
+
+            // Movement Inputs Released
+            if (event.type == sf::Event::KeyReleased)
+            {
+                switch (event.key.code)
+                {
+                case sf::Keyboard::W:
+                    m_player->cInput->up = false;
+                    break;
+                case sf::Keyboard::S:
+                    m_player->cInput->down = false;
+                    break;
+                case sf::Keyboard::D:
+                    m_player->cInput->right = false;
+                    break;
+                case sf::Keyboard::A:
+                    m_player->cInput->left = false;
+                    break;
+                default:break;
+                }
+            }
+
+            // Attack Inputs
+            if (event.type == sf::Event::MouseButtonPressed)
+            {
+                switch (event.mouseButton.button)
+                {
+                case sf::Mouse::Left:
+                    spawnBullet(m_player, Vec2(event.mouseButton.x, event.mouseButton.y));
+                    break;
+                default:break;
+                }
+
+            }
+
         }
 
-        // this event is triggered when the W key is released
-        if (event.type == sf::Event::KeyReleased)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::W:
-                m_player->cInput->up = false;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the S key is pressed
-        if (event.type == sf::Event::KeyPressed)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::S:
-                m_player->cInput->down = true;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the S key is released
-        if (event.type == sf::Event::KeyReleased)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::S:
-                m_player->cInput->down = false;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the D key is pressed
-        if (event.type == sf::Event::KeyPressed)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::D:
-                m_player->cInput->right = true;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the D key is released
-        if (event.type == sf::Event::KeyReleased)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::D:
-                m_player->cInput->right = false;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the A key is pressed
-        if (event.type == sf::Event::KeyPressed)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::A:
-                m_player->cInput->left = true;
-                break;
-            default:break;
-            }
-        }
-
-        // this event is triggered when the A key is released
-        if (event.type == sf::Event::KeyReleased)
-        {
-            switch (event.key.code)
-            {
-            case sf::Keyboard::A:
-                m_player->cInput->left = false;
-                break;
-            default:break;
-            }
-        }
-
-        // Attack Input
-        // this event is triggered when left mouse button is pressed
-        if (event.type == sf::Event::MouseButtonPressed)
-        {
-            if (event.mouseButton.button == sf::Mouse::Left)
-            {
-                spawnBullet(m_player, Vec2(event.mouseButton.x, event.mouseButton.y));
-            }
-        }
     }
 }
