@@ -22,10 +22,13 @@ void Game::init(const std::string& path)
         {
             fin >> m_playerConfig.SR >> m_playerConfig.CR >> m_playerConfig.S >> m_playerConfig.FR >> m_playerConfig.FG >> m_playerConfig.FB >> m_playerConfig.OR >> m_playerConfig.OG >> m_playerConfig.OB >> m_playerConfig.OT >> m_playerConfig.V;
         }
+
+        if (temp == "Enemy")
+        {
+            fin >> m_enemyConfig.SR >> m_enemyConfig.CR >> m_enemyConfig.SMIN >> m_enemyConfig.SMAX >> m_enemyConfig.OR >> m_enemyConfig.OG >> m_enemyConfig.OB >> m_enemyConfig.OT >> m_enemyConfig.VMIN >> m_enemyConfig.VMAX >> m_enemyConfig.L >> m_enemyConfig.SP;
+        }
             
     }
-
-    std::cout <<  m_playerConfig.V ;
 
     if (m_windowConfig.FS == 1)
     {
@@ -107,12 +110,18 @@ void Game::spawnEnemy()
 
     auto entity = m_entities.addEntity("enemy");
 
-    float ex = rand() % m_window.getSize().x / 2.0f;
-    float ey = rand() % m_window.getSize().y / 2.0f;
+    float ex = rand() % m_window.getSize().x;
+    float ey = rand() % m_window.getSize().y;
+    auto center = Vec2(m_window.getSize().x, m_window.getSize().y);
+    auto enemyPos = Vec2(ex, ey);
+    float angle = -1 + (rand() % (1 + 1 + 1));
+    int randomV = m_enemyConfig.VMIN + (rand() % m_enemyConfig.VMAX);
+    float randomS = m_enemyConfig.SMIN + (rand() % 1 + m_enemyConfig.SMAX - m_enemyConfig.SMIN);
+    auto normalize = center.normalize(enemyPos);
 
-    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(1.0f, 1.0f), 0.0f);
-    entity->cCollision = std::make_shared<CCollision>(32);
-    entity->cShape = std::make_shared<CShape>(32.0f, 8, sf::Color(10, 10, 10), sf::Color(255, 0, 0), 4.0f);
+    entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(randomS * normalize.x, randomS * normalize.y), angle);
+    entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
+    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, randomV, sf::Color(10, 10, 10), sf::Color(m_enemyConfig.OR, m_enemyConfig.OG, m_enemyConfig.OB), m_enemyConfig.OT);
 
     //record when the most enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -139,7 +148,6 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
 
     auto bullet = m_entities.addEntity("bullet");
     auto entity_stuff = Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y);
-    float distance = target.dist(entity_stuff);
     float angle = target.angle(entity_stuff);
     auto normalize = target.normalize(entity_stuff);
     bullet->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(8 * normalize.x, 8 * normalize.y), angle);
@@ -161,22 +169,45 @@ void Game::sMovement()
 
     if (m_player->cInput->up)
     {
-        m_player->cTransform->velocity.y = -m_playerConfig.S;
+        m_player->cTransform->velocity.y += -m_playerConfig.S;
+
+        if (m_player->cTransform->pos.y - m_player->cCollision->radius * 2 < 0)
+        {
+            m_player->cTransform->velocity.y = 0;
+        }
     }
 
     if (m_player->cInput->down)
     {
-        m_player->cTransform->velocity.y = m_playerConfig.S;
+        m_player->cTransform->velocity.y += m_playerConfig.S;
+
+        if (m_player->cTransform->pos.y + m_player->cCollision->radius * 2 > m_window.getSize().y)
+        {
+            m_player->cTransform->velocity.y = 0;
+
+        }
     }
 
     if (m_player->cInput->right)
     {
-        m_player->cTransform->velocity.x = m_playerConfig.S;
+        m_player->cTransform->velocity.x += m_playerConfig.S;
+
+        if (m_player->cTransform->pos.x + m_player->cCollision->radius * 2 > m_window.getSize().x)
+        {
+            m_player->cTransform->velocity.x = 0;
+
+        }
     }
 
     if (m_player->cInput->left)
     {
-        m_player->cTransform->velocity.x = -m_playerConfig.S;
+        m_player->cTransform->velocity.x += -m_playerConfig.S;
+
+        if (m_player->cTransform->pos.x - m_player->cCollision->radius * 2 < 0)
+        {
+            m_player->cTransform->velocity.x = 0;
+
+        }
     }
     
     // move all entities in m_entities vector
@@ -229,12 +260,15 @@ void Game::sCollision()
           m_player->destroy();
        }
     }
+
+
+
 }
 
 void Game::sEnemySpawner()
 {
     // Spawn an enemy by subtracting the last time an enemy was spawned and the current frame to equal 3 seconds
-    if (m_currentFrame - m_lastEnemySpawnTime == 180) spawnEnemy();
+    if (m_currentFrame - m_lastEnemySpawnTime == m_enemyConfig.SP) spawnEnemy();
 }
 
 
