@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 
 struct WindowConfig { int W, H, FR, FS; };
+struct FontConfig { std::string fontFont; int FS, FR, FG, FB; };
 struct PlayerConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V; float S; };
 struct EnemyConfig { int SR, CR, OR, OG, OB, OT, VMIN, VMAX, L, SP; float SMIN, SMAX; };
 struct BulletConfig { int SR, CR, FR, FG, FB, OR, OG, OB, OT, V, L; float S; };
@@ -15,6 +16,7 @@ class Game
     EntityManager m_entities;       // vector of entities to maintain
     sf::Font m_font;                // the font used
     sf::Text m_text;                // the score text
+    FontConfig m_fontConfig;
     WindowConfig m_windowConfig;
     PlayerConfig m_playerConfig;
     EnemyConfig m_enemyConfig;

@@ -17,6 +17,11 @@ void Game::init(const std::string& path)
         {
             fin >> m_windowConfig.W >> m_windowConfig.H >> m_windowConfig.FR >> m_windowConfig.FS;
         }
+
+        if (temp == "Font")
+        {
+            fin >> m_fontConfig.fontFont >> m_fontConfig.FS >> m_fontConfig.FR >> m_fontConfig.FG >> m_fontConfig.FB;
+        }
         
         if (temp == "Player")
         {
@@ -31,8 +36,16 @@ void Game::init(const std::string& path)
         if (temp == "Bullet")
         {
             fin >> m_bulletConfig.SR >> m_bulletConfig.CR >> m_bulletConfig.S >> m_bulletConfig.FR >> m_bulletConfig.FG >> m_bulletConfig.FB >> m_bulletConfig.OR >> m_bulletConfig.OG >> m_bulletConfig.OB >> m_bulletConfig.OT >> m_bulletConfig.V >> m_bulletConfig.L;
-        }
-            
+        }   
+    }
+
+    m_text.setFont(m_font);
+    m_text.setCharacterSize(m_fontConfig.FS);
+    m_text.setFillColor(sf::Color(m_fontConfig.FR, m_fontConfig.FG, m_fontConfig.FB));
+
+    if (!m_font.loadFromFile(m_fontConfig.fontFont))
+    {
+        std::cout << "No Font" << "\n";
     }
 
     if (m_windowConfig.FS == 1)
@@ -66,6 +79,7 @@ void Game::run()
             sLifeSpan();
         }
 
+        m_text.setString("Score: " + std::to_string(m_score));
         sRender();
         sUserInput();
 
@@ -135,6 +149,7 @@ void Game::spawnEnemy()
     entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(randomS * normalize.x, randomS * normalize.y), angle);
     entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
     entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, randomV, sf::Color(randomFR, randomFG, randomFB), sf::Color(m_enemyConfig.OR, m_enemyConfig.OG, m_enemyConfig.OB), m_enemyConfig.OT);
+    entity->cScore = std::make_shared<CScore>(randomV * 100);
     
 
     //record when the most enemy was spawned
@@ -319,6 +334,9 @@ void Game::sCollision()
            {
                b->destroy();
                e->destroy();
+
+               m_score += e->cScore->score;
+               std::cout << m_score << "\n";
            }
         }
     }
@@ -387,6 +405,7 @@ void Game::sRender()
         m_window.draw(e->cShape->circle);
     }
 
+    m_window.draw(m_text);
     m_window.display();
 }
 
