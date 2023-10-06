@@ -124,11 +124,14 @@ void Game::spawnEnemy()
     float angle = -1 + (rand() % (1 + 1 + 1));
     int randomV = m_enemyConfig.VMIN + (rand() % m_enemyConfig.VMAX);
     float randomS = m_enemyConfig.SMIN + (rand() % 1 + m_enemyConfig.SMAX - m_enemyConfig.SMIN);
+    float randomFR = 0 + (rand() % 255);
+    float randomFG = 0 + (rand() % 255);
+    float randomFB = 0 + (rand() % 255);
     auto normalize = center.normalize(enemyPos);
 
     entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(randomS * normalize.x, randomS * normalize.y), angle);
     entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
-    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, randomV, sf::Color(10, 10, 10), sf::Color(m_enemyConfig.OR, m_enemyConfig.OG, m_enemyConfig.OB), m_enemyConfig.OT);
+    entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, randomV, sf::Color(randomFR, randomFG, randomFB), sf::Color(m_enemyConfig.OR, m_enemyConfig.OG, m_enemyConfig.OB), m_enemyConfig.OT);
 
     //record when the most enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -165,6 +168,7 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
 void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
 {
     // TODO: implement weapon
+    std::cout << "Hello" << "\n";
 }
 
 void Game::sMovement()
@@ -290,9 +294,6 @@ void Game::sCollision()
           m_player->destroy();
        }
     }
-
-
-
 }
 
 void Game::sEnemySpawner()
@@ -396,12 +397,12 @@ void Game::sUserInput()
                 case sf::Mouse::Left:
                     spawnBullet(m_player, Vec2(event.mouseButton.x, event.mouseButton.y));
                     break;
+                case sf::Mouse::Right:
+                    spawnSpecialWeapon(m_player);
+                    break;
                 default:break;
                 }
-
             }
-
         }
-
     }
 }
