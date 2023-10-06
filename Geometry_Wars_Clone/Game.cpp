@@ -63,6 +63,7 @@ void Game::run()
             sMovement();
             sCollision();
             m_currentFrame++;
+            sLifeSpan();
         }
 
         sRender();
@@ -107,6 +108,8 @@ void Game::spawnPlayer()
 
     //make this entity the player
     m_player = entity;
+
+    
 }
 
 // spawn an enemy at random position
@@ -132,6 +135,7 @@ void Game::spawnEnemy()
     entity->cTransform = std::make_shared<CTransform>(Vec2(ex, ey), Vec2(randomS * normalize.x, randomS * normalize.y), angle);
     entity->cCollision = std::make_shared<CCollision>(m_enemyConfig.CR);
     entity->cShape = std::make_shared<CShape>(m_enemyConfig.SR, randomV, sf::Color(randomFR, randomFG, randomFB), sf::Color(m_enemyConfig.OR, m_enemyConfig.OG, m_enemyConfig.OB), m_enemyConfig.OT);
+    
 
     //record when the most enemy was spawned
     m_lastEnemySpawnTime = m_currentFrame;
@@ -159,7 +163,7 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
     bullet->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(m_bulletConfig.S * normalize.x, m_bulletConfig.S * normalize.y), angle);
     bullet->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bullet->cShape = std::make_shared<CShape>( m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_bulletConfig.FR, m_bulletConfig.FG, m_bulletConfig.FB), sf::Color(m_bulletConfig.OR, m_bulletConfig.OG, m_bulletConfig.OB), m_bulletConfig.OT);
-    std::cout << angle << " " << normalize.x << " " << normalize.y << "\n";
+    bullet->cLifeSpan = std::make_shared<CLifeSpan>(m_bulletConfig.L);
 }
 
 void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
@@ -171,41 +175,51 @@ void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
     bulletOne->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, -.05), -.05);
     bulletOne->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletOne->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletOne->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletTwo = m_entities.addEntity("bullet");
     bulletTwo->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(.008, -10), -1.5);
     bulletTwo->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletTwo->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletTwo->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletThree = m_entities.addEntity("bullet");
     bulletThree->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, -.08), -3);
     bulletThree->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletThree->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletThree->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletFour = m_entities.addEntity("bullet");
     bulletFour->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-.08, 10), 1.6);
     bulletFour->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletFour->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletFour->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletFive = m_entities.addEntity("bullet");
     bulletFive->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, 10), 2);
     bulletFive->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletFive->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletFive->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletSix = m_entities.addEntity("bullet");
     bulletSix->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, -10), -2);
     bulletSix->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletSix->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletSix->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletSeven = m_entities.addEntity("bullet");
     bulletSeven->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, 10), 2);
     bulletSeven->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletSeven->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletSeven->cLifeSpan = std::make_shared<CLifeSpan>(10);
 
     auto bulletEight = m_entities.addEntity("bullet");
     bulletEight->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, -10), 2);
     bulletEight->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bulletEight->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+    bulletEight->cLifeSpan = std::make_shared<CLifeSpan>(10);
+
+    
 }
 
 void Game::sMovement()
@@ -272,6 +286,21 @@ void Game::sLifeSpan()
     // if entity has > 0 remaining lifespan, subtract 1
     // if it has lifespan and is alive sclae its alpha channel properly
     // if it has lifesapn and its time is up destroy it
+
+    for (auto e : m_entities.getEntities())
+    {
+        if (e->cLifeSpan)
+        {
+            e->cLifeSpan->remaining--;
+
+            if (e->cLifeSpan->remaining == 0)
+            {
+                e->destroy();
+            }
+        }
+
+    }
+
 }
 
 void Game::sCollision()
