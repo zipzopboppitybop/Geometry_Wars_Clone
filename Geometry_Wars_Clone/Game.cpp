@@ -152,10 +152,6 @@ void Game::spawnSmallEnemies(std::shared_ptr<Entity>  e)
 // spawns a bullet from a given entity to a target location
 void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
 {
-    // TODO: implement the spawning of a bullet which travels toward target
-    // -bullet speed is given as a scalar speed
-    // - you must set the velocity using formula in notes
-
     auto bullet = m_entities.addEntity("bullet");
     auto entity_stuff = Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y);
     float angle = target.angle(entity_stuff);
@@ -163,18 +159,57 @@ void Game::spawnBullet(std::shared_ptr<Entity> entity, const Vec2& target)
     bullet->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(m_bulletConfig.S * normalize.x, m_bulletConfig.S * normalize.y), angle);
     bullet->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
     bullet->cShape = std::make_shared<CShape>( m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_bulletConfig.FR, m_bulletConfig.FG, m_bulletConfig.FB), sf::Color(m_bulletConfig.OR, m_bulletConfig.OG, m_bulletConfig.OB), m_bulletConfig.OT);
+    std::cout << angle << " " << normalize.x << " " << normalize.y << "\n";
 }
 
 void Game::spawnSpecialWeapon(std::shared_ptr<Entity> entity)
 {
     // TODO: implement weapon
-    std::cout << "Hello" << "\n";
+      
+    auto bulletOne = m_entities.addEntity("bullet");
+    auto entity_stuff = Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y);
+    bulletOne->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, -.05), -.05);
+    bulletOne->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletOne->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletTwo = m_entities.addEntity("bullet");
+    bulletTwo->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(.008, -10), -1.5);
+    bulletTwo->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletTwo->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletThree = m_entities.addEntity("bullet");
+    bulletThree->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, -.08), -3);
+    bulletThree->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletThree->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletFour = m_entities.addEntity("bullet");
+    bulletFour->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-.08, 10), 1.6);
+    bulletFour->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletFour->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletFive = m_entities.addEntity("bullet");
+    bulletFive->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, 10), 2);
+    bulletFive->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletFive->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletSix = m_entities.addEntity("bullet");
+    bulletSix->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, -10), -2);
+    bulletSix->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletSix->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletSeven = m_entities.addEntity("bullet");
+    bulletSeven->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(10, 10), 2);
+    bulletSeven->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletSeven->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
+
+    auto bulletEight = m_entities.addEntity("bullet");
+    bulletEight->cTransform = std::make_shared<CTransform>(Vec2(entity->cTransform->pos.x, entity->cTransform->pos.y), Vec2(-10, -10), 2);
+    bulletEight->cCollision = std::make_shared<CCollision>(m_bulletConfig.CR);
+    bulletEight->cShape = std::make_shared<CShape>(m_bulletConfig.SR, m_bulletConfig.V, sf::Color(m_playerConfig.FR, m_playerConfig.FG, m_playerConfig.FB), sf::Color(m_playerConfig.OR, m_playerConfig.OG, m_playerConfig.OB), m_bulletConfig.OT);
 }
 
 void Game::sMovement()
 {
-    //TODO: implement all entity movement in this function
-
     // player movement
     m_player->cTransform->velocity = { 0,0 };
 
@@ -182,7 +217,7 @@ void Game::sMovement()
     {
         m_player->cTransform->velocity.y += -m_playerConfig.S;
 
-        if (m_player->cTransform->pos.y - m_player->cCollision->radius  < 0)
+        if (m_player->cTransform->pos.y - m_player->cCollision->radius < 0)
         {
             m_player->cTransform->velocity.y = 0;
         }
@@ -227,30 +262,6 @@ void Game::sMovement()
         e->cTransform->pos.x += e->cTransform->velocity.x;
         e->cTransform->pos.y += e->cTransform->velocity.y;
     }
-
-    for (auto e : m_entities.getEntities("enemy"))
-    {
-        if (e->cTransform->pos.x - e->cCollision->radius < 0)
-        {
-            e->cTransform->velocity.x *= -1;
-        }
-
-        if (e->cTransform->pos.x + e->cCollision->radius  > m_window.getSize().x)
-        {
-            e->cTransform->velocity.x *= -1;
-        }
-
-        if (e->cTransform->pos.y - e->cCollision->radius  < 0)
-        {
-            e->cTransform->velocity.y *= -1;
-        }
-
-        if (e->cTransform->pos.y + e->cCollision->radius > m_window.getSize().y)
-        {
-            e->cTransform->velocity.y *= -1;
-        }
-    }
-    
 }
 
 void Game::sLifeSpan()
@@ -265,9 +276,9 @@ void Game::sLifeSpan()
 
 void Game::sCollision()
 {
-    //TODO: implement all proper collisions between entities
-    // use collision radius not shape radius
 
+    
+    // if bullet hits enemy they both die
     for (auto b : m_entities.getEntities("bullet"))
     {
         for (auto e : m_entities.getEntities("enemy"))
@@ -283,6 +294,7 @@ void Game::sCollision()
         }
     }
 
+    // if enemy hits player they both die
     for (auto e : m_entities.getEntities("enemy"))
     {
        auto enemy_stuff = Vec2(e->cTransform->pos.x, e->cTransform->pos.y);
@@ -294,11 +306,35 @@ void Game::sCollision()
           m_player->destroy();
        }
     }
+
+    // if enemy hits walls they will bounce off
+    for (auto e : m_entities.getEntities("enemy"))
+    {
+        if (e->cTransform->pos.x - e->cCollision->radius < 0)
+        {
+            e->cTransform->velocity.x *= -1;
+        }
+
+        if (e->cTransform->pos.x + e->cCollision->radius > m_window.getSize().x)
+        {
+            e->cTransform->velocity.x *= -1;
+        }
+
+        if (e->cTransform->pos.y - e->cCollision->radius < 0)
+        {
+            e->cTransform->velocity.y *= -1;
+        }
+
+        if (e->cTransform->pos.y + e->cCollision->radius > m_window.getSize().y)
+        {
+            e->cTransform->velocity.y *= -1;
+        }
+    }
 }
 
 void Game::sEnemySpawner()
 {
-    // Spawn an enemy by subtracting the last time an enemy was spawned and the current frame to equal 3 seconds
+    // Spawn an enemy by subtracting the last time an enemy was spawned and the current frame
     if (m_currentFrame - m_lastEnemySpawnTime == m_enemyConfig.SP) spawnEnemy();
 }
 
